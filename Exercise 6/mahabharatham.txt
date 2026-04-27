@@ -1,0 +1,79 @@
+parent(shantanu, bhishma).
+parent(shantanu, chitrangada).
+parent(shantanu, vichitravirya).
+parent(satyavati, chitrangada).
+parent(satyavati, vichitravirya).
+parent(vichitravirya, dhritarashtra).
+parent(vichitravirya, pandu).
+parent(vichitravirya, vidura).
+parent(dhritarashtra, duryodhana).
+parent(dhritarashtra, dushasana).
+parent(dhritarashtra, yuyutsu).
+parent(pandu, yudhishthira).
+parent(pandu, bhima).
+parent(pandu, arjuna).
+parent(pandu, nakula).
+parent(pandu, sahadeva).
+parent(kunti, yudhishthira).
+parent(kunti, bhima).
+parent(kunti, arjuna).
+parent(arjuna, abhimanyu).
+parent(subhadra, abhimanyu).
+parent(abhimanyu, parikshit).
+male(shantanu).
+male(bhishma).
+male(chitrangada).
+male(vichitravirya).
+male(dhritarashtra).
+male(pandu).
+male(vidura).
+male(duryodhana).
+male(dushasana).
+male(yuyutsu).
+male(yudhishthira).
+male(bhima).
+male(arjuna).
+male(nakula).
+male(sahadeva).
+male(abhimanyu).
+male(parikshit).
+
+female(satyavati).
+female(gandhari).
+female(kunti).
+female(draupadi).
+female(subhadra).
+female(uttara).
+spouse(shantanu, satyavati).
+spouse(dhritarashtra, gandhari).
+spouse(pandu, kunti).
+spouse(arjuna, subhadra).
+spouse(abhimanyu, uttara).
+spouse(X,Y) :- spouse(Y,X).
+father(X,Y) :- parent(X,Y), male(X).
+mother(X,Y) :- parent(X,Y), female(X).
+son(X,Y) :- parent(Y,X), male(X).
+daughter(X,Y) :- parent(Y,X), female(X).
+husband(X,Y) :- spouse(X,Y), male(X).
+wife(X,Y) :- spouse(X,Y), female(X).
+grandparent(X,Z) :- parent(X,Y), parent(Y,Z).
+grandfather(X,Z) :- grandparent(X,Z), male(X).
+grandmother(X,Z) :- grandparent(X,Z), female(X).
+sibling(X,Y) :- parent(P,X), parent(P,Y), X \= Y.
+brother(X,Y) :- sibling(X,Y), male(X).
+sister(X,Y) :- sibling(X,Y), female(X).
+uncle(X,Y) :-
+    setof(U, P^(parent(P,Y), brother(U,P)), List),
+    member(X,List).
+
+aunt(X,Y) :-
+    setof(A, P^(parent(P,Y), sister(A,P)), List),
+    member(X,List).
+
+cousin(X,Y) :-
+    setof(C, P1^P2^(parent(P1,X), parent(P2,Y), sibling(P1,P2)), List),
+    member(X,List).
+ancestor(X,Y) :- parent(X,Y), !.
+ancestor(X,Y) :- parent(X,Z), ancestor(Z,Y).
+
+descendant(X,Y) :- ancestor(Y,X).

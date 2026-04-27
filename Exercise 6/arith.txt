@@ -1,0 +1,50 @@
+add(X,Y,Result) :-
+    number(X), number(Y),
+    Result is X+Y,
+    format("~w + ~w = ~w~n",[X,Y,Result]).
+subtract(X,Y,Result) :-
+    number(X), number(Y),
+    Result is X-Y,
+    format("~w - ~w = ~w~n",[X,Y,Result]).
+
+multiply(X,Y,Result) :-
+    number(X), number(Y),
+    Result is X*Y,
+    format("~w * ~w = ~w~n",[X,Y,Result]).
+
+divide(_,0,_) :-
+    write('Error: Division by zero'), nl, fail.
+
+divide(X,Y,Result) :-
+    number(X), number(Y), Y =\= 0,
+    Result is X/Y,
+    format("~w / ~w = ~w~n",[X,Y,Result]).
+
+modulus(X,Y,Result) :-
+    number(X), number(Y),
+    Result is X mod Y,
+    format("~w mod ~w = ~w~n",[X,Y,Result]).
+
+power(X,Y,Result) :-
+    number(X), number(Y),
+    Result is X**Y,
+    format("~w ^ ~w = ~w~n",[X,Y,Result]).
+
+squareroot(X,Result) :-
+    X >= 0,
+    Result is sqrt(X),
+    format("sqrt(~w) = ~w~n",[X,Result]).
+
+squareroot(X,_) :-
+    X < 0,
+    write('Error: Negative number'), nl, fail.
+
+calculate_all(X,Y) :-
+    write('--- CALCULATOR ---'), nl,
+    add(X,Y,_),
+    subtract(X,Y,_),
+    multiply(X,Y,_),
+    divide(X,Y,_),
+    modulus(X,Y,_),
+    power(X,Y,_),
+    squareroot(X,_).

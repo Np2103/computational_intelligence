@@ -1,0 +1,106 @@
+% =============================================
+% GROCERY BILLING SYSTEM IN PROLOG
+% =============================================
+
+:- dynamic item/3.
+
+% --- Pre-loaded Grocery Items: item(Name, Price, Unit) ---
+item(rice,   55,  kg).
+item(wheat,  40,  kg).
+item(sugar,  45,  kg).
+item(salt,   20,  kg).
+item(oil,   130,  litre).
+item(bread,  40,  loaf).
+item(eggs,    7,  piece).
+
+% =============================================
+% 1. CHECK IF ITEM EXISTS
+% =============================================
+
+item_exists(ItemName) :-
+    item(ItemName, _, _),
+    format("Item '~w' is available.~n", [ItemName]).
+
+item_exists(ItemName) :-
+    \+ item(ItemName, _, _),
+    format("Sorry, '~w' is not available.~n", [ItemName]).
+
+% =============================================
+% 2. GET PRICE OF AN ITEM
+% =============================================
+
+get_price(ItemName) :-
+    item(ItemName, Price, Unit),
+    format("Price of ~w: Rs. ~w per ~w~n", [ItemName, Price, Unit]).
+
+get_price(ItemName) :-
+    \+ item(ItemName, _, _),
+    format("Item '~w' not found in store.~n", [ItemName]).
+
+% =============================================
+% 3. ITEM COST (Price x Quantity)
+% =============================================
+
+item_cost(ItemName, Quantity, Cost) :-
+    item(ItemName, Price, Unit),
+    Cost is Price * Quantity,
+    format("~w x ~w ~w = Rs. ~w~n", [ItemName, Quantity, Unit, Cost]).
+
+% =============================================
+% 4. ADD NEW ITEM
+% =============================================
+
+add_item(Name, Price, Unit) :-
+    item(Name, _, _), !,
+    format("Item '~w' already exists!~n", [Name]).
+
+add_item(Name, Price, Unit) :-
+    assertz(item(Name, Price, Unit)),
+    format("New item '~w' added successfully!~n", [Name]).
+
+% =============================================
+% 5. LIST ALL ITEMS (Inventory)
+% =============================================
+
+list_items :-
+    write('============================='), nl,
+    write(' STORE INVENTORY             '), nl,
+    write(' Item         Price   Unit   '), nl,
+    write('============================='), nl,
+    forall(item(Name, Price, Unit),
+           format("  ~w~30|Rs. ~w / ~w~n", [Name, Price, Unit])),
+    write('============================='), nl.
+
+% =============================================
+% 6. CALCULATE BILL
+% =============================================
+
+calculate_bill([], 0) :-
+    write(' '), nl.
+
+calculate_bill([item(Name, Qty) | Rest], Total) :-
+    item(Name, Price, Unit),
+    Cost is Price * Qty,
+    format("  ~w x ~w ~w @ Rs.~w = Rs.~w~n", [Name, Qty, Unit, Price, Cost]),
+    calculate_bill(Rest, RestTotal),
+    Total is Cost + RestTotal.
+
+calculate_bill([item(Name, _) | Rest], Total) :-
+    \+ item(Name, _, _),
+    format("  WARNING: '~w' not found in store - skipped.~n", [Name]),
+    calculate_bill(Rest, Total).
+
+% =============================================
+% 7. GENERATE FULL BILL
+% =============================================
+
+generate_bill(OrderList) :-
+    nl,
+    write('=============================='), nl,
+    write('       GROCERY BILL           '), nl,
+    write('=============================='), nl,
+    calculate_bill(OrderList, Total),
+    write('------------------------------'), nl,
+    format("  TOTAL BILL:  Rs. ~w~n", [Total]),
+    write('=============================='), nl.
+
